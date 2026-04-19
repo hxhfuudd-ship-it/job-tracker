@@ -1,0 +1,31 @@
+.boardWrapper {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 1fr 1fr;
+  gap: 12px;
+  padding: 16px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.inbox {
+  width: 340px;
+  flex-shrink: 0;
+  padding: 16px 16px 16px 0;
+  overflow-y: auto;
+}
+
+.inboxColumn {
+  background: #eef2ff;
+  border: 1px dashed #a5b4fc;
+}
+
+.dragOverlay {
+  cursor: grabbing;
+}
