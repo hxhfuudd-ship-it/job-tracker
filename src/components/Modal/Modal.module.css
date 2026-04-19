@@ -31,34 +31,11 @@
   to { transform: translateY(0); opacity: 1; }
 }
 
-.modalHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
 .modalTitle {
   font-size: 18px;
   font-weight: 600;
   color: #1f2937;
-  margin: 0;
-}
-
-.pasteToggle {
-  background: #eef2ff;
-  color: #6366f1;
-  border: 1px solid #c7d2fe;
-  border-radius: 6px;
-  padding: 6px 12px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.pasteToggle:hover {
-  background: #e0e7ff;
+  margin: 0 0 16px;
 }
 
 .pasteSection {

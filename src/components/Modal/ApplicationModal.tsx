@@ -21,7 +21,7 @@ const COMMON_COMPANIES = [
 ];
 
 const LOCATION_RE = /^(?:北京|上海|广州|深圳|杭州|成都|武汉|南京|西安|重庆|苏州|天津|长沙|郑州|东莞|青岛|合肥|佛山|宁波|厦门|大连|福州|无锡|济南|哈尔滨|沈阳|昆明|珠海|中山|惠州|海口|三亚|贵阳|太原|石家庄|兰州|南宁|乌鲁木齐|呼和浩特|全国|远程|不限|线上)/;
-const SKIP_RE = /^(?:正式|实习|全职|兼职|研发|产品|设计|运营|市场|销售|职位\s*ID|编号|发布|更新|立即投递|申请|收藏|分享|举报|在线|活跃|今日|昨日|本周|热招|急聘|最新|\d+人|沟通过|感兴趣|投递简历|看过)/;
+const SKIP_RE = /^(?:正式|实习|全职|兼职|研发|产品|产品类|设计|运营|市场|销售|职位\s*ID|编号|发布|更新|更新时间|立即投递|已投递|申请|收藏|分享|举报|在线|活跃|今日|昨日|本周|热招|急聘|最新|\d+人|沟通过|感兴趣|投递简历|看过|基础信息|招聘批次|毕业|部门[：:]|工作经验|实习-)/;
 
 function parseJobText(text: string): Partial<JobApplication> {
   const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
@@ -34,38 +34,72 @@ function parseJobText(text: string): Partial<JobApplication> {
   const urlMatch = text.match(/(https?:\/\/[^\s]+)/);
   if (urlMatch) url = urlMatch[1];
 
-  // First non-noise, non-location, non-url line is likely the position title
-  for (const line of lines.slice(0, 5)) {
-    if (line.match(/^https?:\/\//) || SKIP_RE.test(line)) continue;
-    if (LOCATION_RE.test(line) && line.length <= 20) {
-      if (!location) location = line;
-      continue;
-    }
-    if (/^\d+[-–~]\d+\s*[Kk万]/.test(line)) continue;
-    if (line.length > 50) continue;
-    if (!position) {
-      position = line;
-      continue;
-    }
+  // Explicit "工作地点" label — only this, NOT "面试地点"
+  const workLocationMatch = text.match(/工作地[点址][：:]\s*(.+)/);
+  if (workLocationMatch) {
+    location = workLocationMatch[1].trim();
   }
 
-  // Explicit label matches override heuristic
-  const locationLabel = text.match(/(?:工作地[点址]?|地[点址])[：:]\s*(.+)/);
-  if (locationLabel) location = locationLabel[1].trim();
-
+  // Position from explicit label
   const positionLabel = text.match(/(?:岗位|职位)[名称]*[：:]\s*(.+)/);
   if (positionLabel) position = positionLabel[1].trim();
 
-  // Job description
-  const descMatch = text.match(/(?:职位描述|工作内容|岗位职责|工作职责|Job\s*Description)[：:\s]*([\s\S]+?)(?=职位要求|任职要求|岗位要求|任职资格|Job\s*Requirements|招聘要求|加分项|$)/i);
-  if (descMatch && descMatch[1].trim().length > 10) {
-    jobDescription = descMatch[1].trim();
+  // Heuristic: first meaningful line is position title
+  if (!position) {
+    for (const line of lines.slice(0, 5)) {
+      if (line.match(/^https?:\/\//) || SKIP_RE.test(line)) continue;
+      if (LOCATION_RE.test(line) && line.length <= 20) continue;
+      if (/^\d+[-–~]\d+\s*[Kk万]/.test(line)) continue;
+      if (line.length > 50) continue;
+      position = line;
+      break;
+    }
   }
 
-  // Requirements (include 加分项 if present)
-  const reqMatch = text.match(/(?:职位要求|任职要求|岗位要求|任职资格|Job\s*Requirements|招聘要求)[：:\s]*([\s\S]+?)$/i);
-  if (reqMatch && reqMatch[1].trim().length > 10) {
-    requirements = reqMatch[1].trim();
+  // Fallback location from standalone city line (only if no explicit label found)
+  if (!location) {
+    for (const line of lines.slice(0, 10)) {
+      if (LOCATION_RE.test(line) && line.length <= 20) {
+        location = line;
+        break;
+      }
+    }
+  }
+
+  // Section-based parsing: find all section headers at line start and split by position
+  const sectionHeaders = [
+    { re: /^(?:职位描述|工作内容|岗位职责|工作职责|Job\s*Description)/im, type: 'desc' },
+    { re: /^(?:职位要求|任职要求|岗位要求|岗位基本要求|任职资格|Job\s*Requirements|招聘要求)/im, type: 'req' },
+    { re: /^(?:岗位亮点|具备以下条件|加分项)/im, type: 'skip' },
+  ];
+
+  type Section = { type: string; start: number; end: number };
+  const sections: Section[] = [];
+  for (const { re, type } of sectionHeaders) {
+    const m = text.match(re);
+    if (m && m.index !== undefined) {
+      const contentStart = m.index + m[0].length;
+      sections.push({ type, start: contentStart, end: text.length });
+    }
+  }
+  sections.sort((a, b) => a.start - b.start);
+  for (let i = 0; i < sections.length - 1; i++) {
+    sections[i].end = sections[i + 1].start;
+  }
+
+  function extractNumberedItems(raw: string): string {
+    const items = raw.split('\n').map((l) => l.trim()).filter((l) => /^[0-9]+[、.）)]/.test(l));
+    return items.length >= 2 ? items.join('\n') : raw.trim();
+  }
+
+  for (const sec of sections) {
+    const content = text.slice(sec.start, sec.end).replace(/^[：:\s]+/, '').trim();
+    if (content.length < 10) continue;
+    if (sec.type === 'desc' && !jobDescription) {
+      jobDescription = extractNumberedItems(content);
+    } else if (sec.type === 'req' && !requirements) {
+      requirements = extractNumberedItems(content);
+    }
   }
 
   return { position, location, url, jobDescription, requirements };
@@ -82,10 +116,10 @@ export function ApplicationModal({ app, defaultStatus, onSave, onDelete, onClose
   const [requirements, setRequirements] = useState('');
   const [notes, setNotes] = useState('');
   const [pasteText, setPasteText] = useState('');
-  const [showPaste, setShowPaste] = useState(false);
   const [showCompanyList, setShowCompanyList] = useState(false);
   const [companyFilter, setCompanyFilter] = useState<string[]>([]);
   const companyRef = useRef<HTMLDivElement>(null);
+  const isNew = !app;
 
   useEffect(() => {
     if (app) {
@@ -131,7 +165,6 @@ export function ApplicationModal({ app, defaultStatus, onSave, onDelete, onClose
     if (info.url) setUrl(info.url);
     if (info.jobDescription) setJobDescription(info.jobDescription);
     if (info.requirements) setRequirements(info.requirements);
-    setShowPaste(false);
     setPasteText('');
   };
 
@@ -158,23 +191,16 @@ export function ApplicationModal({ app, defaultStatus, onSave, onDelete, onClose
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <div className={styles.modalHeader}>
-          <h2 className={styles.modalTitle}>{app ? '编辑申请' : '新增申请'}</h2>
-          {!app && (
-            <button type="button" className={styles.pasteToggle} onClick={() => setShowPaste(!showPaste)}>
-              {showPaste ? '手动填写' : '粘贴识别'}
-            </button>
-          )}
-        </div>
+        <h2 className={styles.modalTitle}>{app ? '编辑申请' : '新增申请'}</h2>
 
-        {showPaste && (
+        {isNew && (
           <div className={styles.pasteSection}>
             <textarea
               className={styles.pasteArea}
               value={pasteText}
               onChange={(e) => setPasteText(e.target.value)}
-              placeholder={'将招聘信息粘贴到这里，点击「智能识别」自动填入\n\n自动识别：岗位名、工作地、工作内容、任职要求\n公司名称需手动选择或输入'}
-              rows={6}
+              placeholder={'粘贴招聘信息，点击「智能识别」自动填入下方表单\n\n自动识别：岗位名、工作地点、工作内容、任职要求\n公司名称需手动选择或输入'}
+              rows={5}
             />
             <button type="button" className={styles.importBtn} onClick={handleParse} disabled={!pasteText.trim()}>
               智能识别
