@@ -4,16 +4,20 @@
 
 **专为大学生求职季打造的看板式申请管理工具**
 
+**Kanban-style job application management for university students.**
+
 [![React](https://img.shields.io/badge/React-19-61dafb?logo=react&logoColor=white)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Vite](https://img.shields.io/badge/Vite-8-646cff?logo=vite&logoColor=white)](https://vite.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 
+[中文](#功能特性) · [English](#features)
+
 </div>
 
 ---
 
-## 预览
+## 预览 / Preview
 
 ![screenshot](docs/screenshot.png)
 
@@ -34,26 +38,41 @@
 
 ---
 
-## 技术栈
+## Features
 
-| 层级 | 技术 |
-|------|------|
-| 框架 | React 19 + TypeScript 6 |
-| 构建 | Vite 8 |
-| 拖拽 | @dnd-kit/core + @dnd-kit/sortable |
-| 样式 | CSS Modules |
-| 持久化 | LocalStorage（防抖写入） |
+| Category | Details |
+|----------|---------|
+| **Kanban Board** | 6-stage pipeline (To Apply → Applied → Written Test → Interview → Offer / Rejected) + Inbox column |
+| **Drag & Drop** | Move cards between columns with automatic status sync, powered by `@dnd-kit` |
+| **Smart Paste** | Paste raw job posting text and auto-extract position, location, description, and requirements |
+| **Company Autocomplete** | 30+ pre-loaded Chinese tech companies with fuzzy search |
+| **Deadline Alerts** | Yellow warning within 3 days, red badge when expired |
+| **Full-text Search** | Filter by company, position, location, or notes |
+| **Data Export/Import** | One-click JSON backup and restore |
+| **Offline-first** | All data persisted in LocalStorage with debounced writes |
 
 ---
 
-## 快速开始
+## 技术栈 / Tech Stack
 
-### 环境要求
+| 层级 / Layer | 技术 / Technology |
+|------|------|
+| 框架 / Framework | React 19 + TypeScript 6 |
+| 构建 / Build | Vite 8 |
+| 拖拽 / Drag & Drop | @dnd-kit/core + @dnd-kit/sortable |
+| 样式 / Styling | CSS Modules |
+| 持久化 / Persistence | LocalStorage（防抖写入） |
+
+---
+
+## 快速开始 / Getting Started
+
+### 环境要求 / Prerequisites
 
 - Node.js >= 18
 - npm >= 9
 
-### 安装运行
+### 安装运行 / Install & Run
 
 ```bash
 git clone https://github.com/hxhfuudd-ship-it/job-tracker.git
@@ -62,9 +81,9 @@ npm install
 npm run dev
 ```
 
-浏览器打开 http://localhost:5173 即可使用。
+浏览器打开 / Open http://localhost:5173
 
-### 生产构建
+### 生产构建 / Build for Production
 
 ```bash
 npm run build
@@ -73,49 +92,51 @@ npm run preview
 
 ---
 
-## 项目结构
+## 项目结构 / Project Structure
 
 ```
 src/
-├── App.tsx                     # 根组件，全局状态管理
-├── types.ts                    # TypeScript 类型定义
-├── constants.ts                # 列配置、公司预设
+├── App.tsx                     # 根组件 / Root component
+├── types.ts                    # 类型定义 / TypeScript interfaces
+├── constants.ts                # 列配置 / Column config & presets
 ├── hooks/
-│   └── useLocalStorage.ts      # 防抖 localStorage Hook
+│   └── useLocalStorage.ts      # 防抖存储 / Debounced localStorage hook
 └── components/
-    ├── Board/                  # DnD 上下文、列布局
-    ├── Column/                 # 可放置列
-    ├── Card/                   # 可排序申请卡片
-    ├── Modal/                  # 新增/编辑表单 + 智能识别
-    ├── Stats/                  # 流水线统计
-    └── SearchBar/              # 搜索输入
+    ├── Board/                  # DnD 上下文 / DnD context & layout
+    ├── Column/                 # 可放置列 / Droppable column
+    ├── Card/                   # 可排序卡片 / Sortable card
+    ├── Modal/                  # 表单+智能识别 / Form + smart paste
+    ├── Stats/                  # 统计栏 / Pipeline statistics
+    └── SearchBar/              # 搜索 / Search input
 ```
 
 ---
 
-## 规划中
+## 规划中 / Roadmap
 
-- [ ] 暗色模式
-- [ ] 日历视图展示截止日期
-- [ ] 浏览器插件一键抓取招聘信息
-- [ ] 云端同步（可选后端）
-- [ ] 简历匹配度评分
-
----
-
-## 参与贡献
-
-欢迎贡献！请先开 Issue 讨论你想做的改动。
-
-1. Fork 本仓库
-2. 创建分支 (`git checkout -b feat/amazing-feature`)
-3. 提交改动
-4. 推送分支
-5. 发起 Pull Request
+- [ ] 暗色模式 / Dark mode
+- [ ] 日历视图 / Calendar view for deadlines
+- [ ] 浏览器插件一键抓取 / Browser extension for one-click capture
+- [ ] 云端同步 / Cloud sync (optional backend)
+- [ ] 简历匹配度评分 / Resume matching score
 
 ---
 
-## 许可证
+## 参与贡献 / Contributing
+
+欢迎贡献！请先开 Issue 讨论。
+
+Contributions are welcome! Please open an issue first to discuss what you'd like to change.
+
+1. Fork 本仓库 / Fork the repo
+2. 创建分支 / Create your branch (`git checkout -b feat/amazing-feature`)
+3. 提交改动 / Commit your changes
+4. 推送分支 / Push to the branch
+5. 发起 PR / Open a Pull Request
+
+---
+
+## 许可证 / License
 
 [MIT](./LICENSE)
 
@@ -123,4 +144,6 @@ src/
 
 <div align="center">
 <sub>基于 React + TypeScript 构建，为中国求职市场设计。</sub>
+<br>
+<sub>Built with React + TypeScript. Designed for the Chinese job market.</sub>
 </div>
