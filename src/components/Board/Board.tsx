@@ -39,11 +39,18 @@ export function Board({ applications, searchQuery, onUpdate, onAdd, onEdit, onDe
     if (!searchQuery.trim()) return applications;
     const q = searchQuery.toLowerCase();
     return applications.filter(
-      (a) => a.company.toLowerCase().includes(q) || a.position.toLowerCase().includes(q)
+      (a) => a.company.toLowerCase().includes(q) || a.position.toLowerCase().includes(q) || a.location.toLowerCase().includes(q) || a.notes.toLowerCase().includes(q)
     );
   }, [applications, searchQuery]);
 
-  const getColumnApps = (columnId: ColumnType) => filtered.filter((a) => a.status === columnId);
+  const columnAppsMap = useMemo(() => {
+    const map: Record<string, JobApplication[]> = {};
+    for (const col of ALL_COLUMNS) map[col.id] = [];
+    for (const app of filtered) {
+      if (map[app.status]) map[app.status].push(app);
+    }
+    return map;
+  }, [filtered]);
 
   const findContainer = (id: string): ColumnType | undefined => {
     if (ALL_COLUMNS.some((c) => c.id === id)) return id as ColumnType;
@@ -111,7 +118,7 @@ export function Board({ applications, searchQuery, onUpdate, onAdd, onEdit, onDe
               id={col.id}
               title={col.title}
               color={col.color}
-              applications={getColumnApps(col.id)}
+              applications={columnAppsMap[col.id] || []}
               onAdd={onAdd}
               onEdit={onEdit}
               onDelete={onDelete}
@@ -123,7 +130,7 @@ export function Board({ applications, searchQuery, onUpdate, onAdd, onEdit, onDe
             id={INBOX_COLUMN.id}
             title={INBOX_COLUMN.title}
             color={INBOX_COLUMN.color}
-            applications={getColumnApps(INBOX_COLUMN.id)}
+            applications={columnAppsMap[INBOX_COLUMN.id] || []}
             onAdd={onAdd}
             onEdit={onEdit}
             onDelete={onDelete}

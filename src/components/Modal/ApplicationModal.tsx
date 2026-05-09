@@ -145,6 +145,14 @@ export function ApplicationModal({ app, defaultStatus, onSave, onDelete, onClose
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [onClose]);
+
   const handleCompanyInput = (val: string) => {
     setCompany(val);
     if (val.trim()) {

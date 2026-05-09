@@ -42,6 +42,35 @@ function App() {
     setEditingApp(null);
   }, [setApplications]);
 
+  const handleExport = useCallback(() => {
+    const blob = new Blob([JSON.stringify(applications, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `job-tracker-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [applications]);
+
+  const handleImport = useCallback(() => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(reader.result as string);
+          if (Array.isArray(data)) setApplications(data);
+        } catch { /* ignore invalid file */ }
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  }, [setApplications]);
+
   return (
     <div className={styles.app}>
       <div className={styles.topBar}>
@@ -52,6 +81,8 @@ function App() {
         <div className={styles.controls}>
           <SearchBar value={searchQuery} onChange={setSearchQuery} />
           <button className={styles.addGlobalBtn} onClick={() => handleAdd('inbox')}>+ 新增申请</button>
+          <button className={styles.addGlobalBtn} onClick={handleExport}>导出</button>
+          <button className={styles.addGlobalBtn} onClick={handleImport}>导入</button>
         </div>
       </div>
       <div className={styles.statsRow}>

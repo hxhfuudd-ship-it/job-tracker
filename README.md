@@ -1,56 +1,86 @@
-# 📋 求职申请管理看板 Job Tracker
+<div align="center">
 
-> 专为大学生求职季打造的看板式申请管理工具，一眼掌控所有申请进度。
+# Job Tracker
 
-## 预览
+**Kanban-style job application management for Chinese university students.**
+
+[![React](https://img.shields.io/badge/React-19-61dafb?logo=react&logoColor=white)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Vite](https://img.shields.io/badge/Vite-8-646cff?logo=vite&logoColor=white)](https://vite.dev)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
+
+[English](#features) · [中文](#功能特性)
+
+</div>
+
+---
+
+## Demo
 
 ```
-┌─────────────┬─────────────┬─────────────┐  ┌──────────┐
-│   待投递     │   已投递     │    笔试      │  │  暂存区   │
-│  ┌───────┐  │  ┌───────┐  │             │  │ ┌──────┐ │
-│  │ 字节   │  │  │ 美团   │  │             │  │ │ 新卡片│ │
-│  │ AI工程 │  │  │ 产品   │  │             │  │ └──────┘ │
-│  └───────┘  │  └───────┘  │             │  │          │
-├─────────────┼─────────────┼─────────────┤  │          │
-│   面试中     │   已录用     │   已拒绝     │  │          │
-│             │             │             │  │          │
-└─────────────┴─────────────┴─────────────┘  └──────────┘
+┌──────────┬──────────┬──────────┐  ┌────────┐
+│  待投递   │  已投递   │   笔试    │  │ 暂存区  │
+│ ┌──────┐ │ ┌──────┐ │          │  │┌──────┐│
+│ │字节   │ │ │美团   │ │          │  ││ 新卡片││
+│ │AI工程 │ │ │产品   │ │          │  │└──────┘│
+│ └──────┘ │ └──────┘ │          │  │        │
+├──────────┼──────────┼──────────┤  │        │
+│  面试中   │  已录用   │  已拒绝   │  │        │
+└──────────┴──────────┴──────────┘  └────────┘
 ```
 
-## 功能亮点
+> Replace with a real screenshot: place it at `docs/screenshot.png` and uncomment below.
+<!-- ![screenshot](docs/screenshot.png) -->
 
-**看板管理**
-- 6 阶段看板（待投递 → 已投递 → 笔试 → 面试中 → 已录用 / 已拒绝）+ 暂存区
-- 拖拽卡片在列间移动，状态自动更新
-- 2×3 网格布局，右侧暂存区用于批量录入
+---
 
-**智能识别**
-- 粘贴招聘信息文本，一键识别岗位名、工作地点、工作内容、任职要求
-- 自动提取编号条目，过滤团队介绍等无关内容
-- 支持 BOSS 直聘、牛客、字节、美团等主流招聘平台的文本格式
+## Features
 
-**高效录入**
-- 公司名称支持输入搜索 + 下拉选择，预置 30+ 常见互联网公司
-- 卡片上直接显示工作内容摘要（最多 3 条）
-- 职位链接可点击跳转
+| Category | Details |
+|----------|---------|
+| **Kanban Board** | 6-stage pipeline (To Apply → Applied → Written Test → Interview → Offer / Rejected) + Inbox column |
+| **Drag & Drop** | Move cards between columns with automatic status sync, powered by `@dnd-kit` |
+| **Smart Paste** | Paste raw job posting text and auto-extract position, location, description, and requirements |
+| **Company Autocomplete** | 30+ pre-loaded Chinese tech companies with fuzzy search |
+| **Deadline Alerts** | Yellow warning within 3 days, red badge when expired |
+| **Full-text Search** | Filter by company, position, location, or notes |
+| **Data Export/Import** | One-click JSON backup and restore |
+| **Offline-first** | All data persisted in LocalStorage with debounced writes |
 
-**实用功能**
-- 截止日期提醒：3 天内黄色警告，已过期红色标记
-- 按公司名或岗位关键词搜索过滤
-- 顶部各阶段数量统计一目了然
-- LocalStorage 自动持久化，刷新不丢失数据
+---
 
-## 技术栈
+## 功能特性
 
-| 技术 | 用途 |
-|------|------|
-| React 18 + TypeScript | 前端框架 |
-| Vite | 构建工具 |
-| @dnd-kit | 拖拽交互 |
-| CSS Modules | 样式隔离 |
-| LocalStorage | 数据持久化 |
+- **看板管理** — 6 阶段流水线 + 暂存区，拖拽即改状态
+- **智能识别** — 粘贴招聘信息自动提取岗位、地点、职责、要求
+- **公司联想** — 预置 30+ 互联网公司，输入即搜索
+- **截止提醒** — 3 天内黄色预警，过期红色标记
+- **全文搜索** — 支持公司、岗位、地点、备注多字段检索
+- **数据导出/导入** — JSON 一键备份恢复，不怕丢数据
+- **纯本地运行** — 无需后端，数据存浏览器 LocalStorage
 
-## 快速开始
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | React 19 + TypeScript 6 |
+| Build | Vite 8 |
+| Drag & Drop | @dnd-kit/core + @dnd-kit/sortable |
+| Styling | CSS Modules |
+| Persistence | LocalStorage (debounced) |
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js >= 18
+- npm >= 9
+
+### Install & Run
 
 ```bash
 git clone https://github.com/hxhfuudd-ship-it/job-tracker.git
@@ -59,25 +89,65 @@ npm install
 npm run dev
 ```
 
-浏览器打开 `http://localhost:5173` 即可使用。
+Open http://localhost:5173 in your browser.
 
-## 项目结构
+### Build for Production
+
+```bash
+npm run build
+npm run preview
+```
+
+---
+
+## Project Structure
 
 ```
 src/
-├── App.tsx                          # 主应用
-├── types.ts                         # 类型定义
-├── constants.ts                     # 列配置、公司列表
-├── hooks/useLocalStorage.ts         # LocalStorage Hook
+├── App.tsx                     # Root component, global state
+├── types.ts                    # TypeScript interfaces
+├── constants.ts                # Column config, company presets
+├── hooks/
+│   └── useLocalStorage.ts      # Debounced localStorage hook
 └── components/
-    ├── Board/                       # 看板主体 + 拖拽逻辑
-    ├── Column/                      # 单列组件
-    ├── Card/                        # 申请卡片
-    ├── Modal/                       # 新增/编辑表单 + 智能识别
-    ├── Stats/                       # 数据统计栏
-    └── SearchBar/                   # 搜索过滤
+    ├── Board/                  # DnD context, column layout
+    ├── Column/                 # Droppable column
+    ├── Card/                   # Sortable application card
+    ├── Modal/                  # Add/Edit form + smart paste
+    ├── Stats/                  # Pipeline statistics
+    └── SearchBar/              # Search input
 ```
+
+---
+
+## Roadmap
+
+- [ ] Dark mode
+- [ ] Calendar view for deadlines
+- [ ] Browser extension for one-click capture from job sites
+- [ ] Cloud sync (optional backend)
+- [ ] Resume matching score
+
+---
+
+## Contributing
+
+Contributions are welcome! Please open an issue first to discuss what you'd like to change.
+
+1. Fork the repo
+2. Create your branch (`git checkout -b feat/amazing-feature`)
+3. Commit your changes
+4. Push to the branch
+5. Open a Pull Request
+
+---
 
 ## License
 
-MIT
+[MIT](./LICENSE)
+
+---
+
+<div align="center">
+<sub>Built with React + TypeScript. Designed for the Chinese job market.</sub>
+</div>
